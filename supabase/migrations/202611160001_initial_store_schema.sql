@@ -206,6 +206,7 @@ begin
     select item.product_id, sum(item.quantity)::integer as quantity
     from jsonb_to_recordset(p_items) as item(product_id uuid, quantity integer)
     group by item.product_id
+    order by item.product_id
   loop
     if v_line.product_id is null or v_line.quantity is null or v_line.quantity < 1 then
       raise exception 'Artigo ou quantidade inválida.';
@@ -244,6 +245,7 @@ begin
     select item.product_id, sum(item.quantity)::integer as quantity
     from jsonb_to_recordset(p_items) as item(product_id uuid, quantity integer)
     group by item.product_id
+    order by item.product_id
   loop
     select * into v_product from public.products where id = v_line.product_id;
     insert into public.order_items (
