@@ -344,3 +344,23 @@ body{color:#21131b}
 .theme-dark .hero{background:#291f25}
 .theme-dark .contact-section{background:#171217}
 @media(max-width:720px){.hero{gap:28px}.hero-visual{max-width:440px}.hero-photo{height:min(120vw,540px)}.hero-photo img{object-position:center top}.editorial{grid-template-columns:1fr}.editorial-copy{grid-row:2}.founder-photo{grid-row:1;min-height:390px}}
+
+
+/* Preferência visual: site sem animações, mantendo apenas o WhatsApp discreto */
+html{scroll-behavior:auto!important}
+*,*::before,*::after{
+  animation:none!important;
+  transition:none!important;
+  scroll-behavior:auto!important;
+}
+.whatsapp-float{
+  animation:whatsapp-soft-blink 1.8s ease-in-out infinite!important;
+  transition:none!important;
+}
+@keyframes whatsapp-soft-blink{
+  0%,100%{opacity:1}
+  50%{opacity:.72}
+}
+@media(prefers-reduced-motion:reduce){
+  .whatsapp-float{animation:none!important}
+}
