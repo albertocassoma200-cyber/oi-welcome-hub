@@ -1,21 +1,21 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ArrowRight, ArrowUpRight, Check, Heart, Instagram, Menu, Plus, Search, ShoppingBag, MessageCircle, Moon, Sun, X } from "lucide-react";
 
 export const Route = createFileRoute("/")({ component: Storefront });
 
 const WA = "https://wa.me/244939292721";
 const categories = [
-  { name: "Moda feminina", image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=900&q=85", count: "Estilo para todos os dias" },
-  { name: "Beleza & cosméticos", image: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=900&q=85", count: "Realça a tua beleza" },
-  { name: "Bolsas & acessórios", image: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=900&q=85", count: "Os detalhes que encantam" },
-  { name: "Cuidados pessoais", image: "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=900&q=85", count: "O teu momento de cuidado" },
+  { name: "Moda feminina", image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1600&q=95", count: "Estilo para todos os dias" },
+  { name: "Beleza & cosméticos", image: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=1600&q=95", count: "Realça a tua beleza" },
+  { name: "Bolsas & acessórios", image: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=1600&q=95", count: "Os detalhes que encantam" },
+  { name: "Cuidados pessoais", image: "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?auto=format&fit=crop&w=1600&q=95", count: "O teu momento de cuidado" },
 ];
 const products = [
-  { id: 1, name: "Conjunto de beleza essencial", category: "Beleza & cosméticos", price: 18500, image: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=900&q=85", tag: "Em destaque" },
-  { id: 2, name: "Bolsa elegante everyday", category: "Bolsas & acessórios", price: 24000, image: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=900&q=85", tag: "Favorito" },
-  { id: 3, name: "Kit de autocuidado", category: "Cuidados pessoais", price: 12500, image: "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=900&q=85", tag: "Novidade" },
-  { id: 4, name: "Look casual feminino", category: "Moda feminina", price: 32000, image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=900&q=85", tag: "Em destaque" },
+  { id: 1, name: "Conjunto de beleza essencial", category: "Beleza & cosméticos", price: 18500, image: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=1600&q=95", tag: "Em destaque" },
+  { id: 2, name: "Bolsa elegante everyday", category: "Bolsas & acessórios", price: 24000, image: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=1600&q=95", tag: "Favorito" },
+  { id: 3, name: "Kit de autocuidado", category: "Cuidados pessoais", price: 12500, image: "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?auto=format&fit=crop&w=1600&q=95", tag: "Novidade" },
+  { id: 4, name: "Look casual feminino", category: "Moda feminina", price: 32000, image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1600&q=95", tag: "Em destaque" },
 ];
 type Product = (typeof products)[number];
 const money = (n: number) => new Intl.NumberFormat("pt-AO", { style: "currency", currency: "AOA", maximumFractionDigits: 0 }).format(n);
@@ -23,6 +23,13 @@ const money = (n: number) => new Intl.NumberFormat("pt-AO", { style: "currency",
 function Storefront() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">("light");
+  useEffect(() => {
+    const savedTheme = window.localStorage.getItem("universo-barbies-theme");
+    if (savedTheme === "light" || savedTheme === "dark") setTheme(savedTheme);
+  }, []);
+  useEffect(() => {
+    window.localStorage.setItem("universo-barbies-theme", theme);
+  }, [theme]);
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("Todos");
