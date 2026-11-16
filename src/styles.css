@@ -402,3 +402,7 @@ html{scroll-behavior:auto!important}
  .order-bar{gap:9px;padding:12px}
  .order-bar>button:not(:last-child){padding:11px 10px;font-size:9px}
 }
+
+#lovable-badge {
+  display: none !important;
+}
