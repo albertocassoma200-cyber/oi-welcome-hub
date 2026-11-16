@@ -105,3 +105,47 @@ footer .brand-logo{background:#fff;border-radius:50%;padding:4px}
  .catalog-spotlight-logo{width:58px;height:58px;right:24px;bottom:260px;border-width:3px}
  .product-info{padding:13px 8px}
 }
+
+
+/* Redesign de navegação, botões e interações */
+html{scroll-padding-top:90px}
+.site-header{top:0;height:90px;padding-inline:7%;background:rgba(255,255,255,.96);border-bottom:1px solid #f3dce8;box-shadow:0 5px 25px rgba(70,20,48,.045)}
+.main-nav{gap:clamp(16px,2.4vw,34px)}
+.main-nav a{position:relative;padding:12px 0;font-size:11px;font-weight:600;letter-spacing:.025em}
+.main-nav a:after{content:"";position:absolute;left:0;right:100%;bottom:4px;height:2px;background:var(--pink);transition:right .25s ease}
+.main-nav a:hover:after,.main-nav a:focus-visible:after{right:0}
+.header-cta,.btn-primary,.btn-light,.order-bar>a{border-radius:999px;transition:transform .22s ease,box-shadow .22s ease,background .22s ease}
+.header-cta,.btn-primary{box-shadow:0 7px 18px rgba(237,8,127,.16)}
+.header-cta:hover,.btn-primary:hover,.btn-light:hover,.order-bar>a:hover{transform:translateY(-3px);box-shadow:0 11px 25px rgba(170,0,89,.2)}
+.icon-btn,.filter-search,.product-bottom button,.favorite,.category-arrow{transition:transform .2s ease,background .2s ease,color .2s ease}
+.icon-btn:hover,.filter-search:hover{transform:translateY(-2px);color:var(--pink)}
+.category-card,.product-card,.editorial-image{border-radius:14px;overflow:hidden}
+.category-card{box-shadow:0 10px 28px rgba(70,20,48,.08)}
+.product-image{border-radius:13px;overflow:hidden}
+.product-card{padding:0 0 8px;border:1px solid #f5eaf0;border-radius:14px;overflow:hidden;background:#fff;transition:transform .28s ease,box-shadow .28s ease}
+.product-card:hover{transform:translateY(-7px);box-shadow:0 18px 38px rgba(75,25,51,.12)}
+.product-info{padding:17px 15px}
+.product-bottom button{border-radius:50%;width:36px;height:36px}
+.product-bottom button:hover{transform:rotate(90deg) scale(1.06)}
+.favorite:hover{transform:scale(1.12)}
+.category-card:hover .category-arrow{background:#fff;color:var(--pink);transform:rotate(45deg)}
+.whatsapp-float{width:60px;height:60px;right:25px;bottom:25px;border:3px solid #fff;border-radius:50%;font-size:0;background:#20c66b;display:grid;place-items:center;box-shadow:0 8px 24px rgba(22,155,78,.28);animation:whatsapp-breathe 2.2s ease-in-out infinite;transition:transform .2s ease}
+.whatsapp-float:before,.whatsapp-float:after{display:none}
+.whatsapp-float svg{stroke:#fff;stroke-width:2.2}
+.whatsapp-float:hover{transform:scale(1.1) rotate(-7deg);background:#16ae59}
+@keyframes whatsapp-breathe{0%,100%{box-shadow:0 8px 24px rgba(22,155,78,.28),0 0 0 0 rgba(32,198,107,.28)}50%{box-shadow:0 8px 24px rgba(22,155,78,.28),0 0 0 12px rgba(32,198,107,0)}}
+.footer-wordmark{display:inline-block;color:#fff;font:600 24px var(--serif);letter-spacing:-.03em}
+.footer-wordmark em{color:#ff8acb;font-weight:500}
+footer>p{margin-top:12px}
+footer{padding-top:48px}
+.btn-link,.text-arrow,.socials a,.footer-bottom a{transition:color .2s ease,transform .2s ease}
+.btn-link:hover,.text-arrow:hover,.socials a:hover,.footer-bottom a:hover{color:#ffb3d8;transform:translateX(3px)}
+button:active,.btn-primary:active,.header-cta:active{transform:scale(.97)}
+@media(max-width:720px){
+ .site-header{height:72px;padding-inline:4%}
+ .main-nav{top:72px;border-top:1px solid #f7e7ef}
+ .main-nav a{padding:8px 0}
+ .whatsapp-float{width:54px;height:54px;right:16px;bottom:16px}
+ .footer-wordmark{font-size:21px}
+}
+@media(prefers-reduced-motion:reduce){.whatsapp-float{animation:none}}
