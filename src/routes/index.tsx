@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { ArrowRight, ArrowUpRight, Check, Heart, Instagram, Menu, Plus, Search, ShoppingBag, MessageCircle, X } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Check, Heart, Instagram, Menu, Plus, Search, ShoppingBag, MessageCircle, Moon, Sun, X } from "lucide-react";
 
 export const Route = createFileRoute("/")({ component: Storefront });
 
@@ -21,7 +21,7 @@ type Product = (typeof products)[number];
 const money = (n: number) => new Intl.NumberFormat("pt-AO", { style: "currency", currency: "AOA", maximumFractionDigits: 0 }).format(n);
 
 function Storefront() {
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);\n  const [theme, setTheme] = useState<"light" | "dark">("light");
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("Todos");
@@ -35,7 +35,7 @@ function Storefront() {
   const cartTotal = cartProducts.reduce((sum, p) => sum + p.price * (cart[p.id] ?? 0), 0);
   const orderMessage = (items: typeof products) => encodeURIComponent("Olá, Universo das Barbies! Gostaria de fazer uma encomenda:\n\n" + items.map(p => "• " + p.name + " × " + cart[p.id] + " — " + money(p.price * (cart[p.id] ?? 0))).join("\n") + "\n\nPodem informar-me sobre disponibilidade e entrega?");
 
-  return <main>
+  return <main className={theme === "dark" ? "theme-dark" : "theme-light"}>
     <header className="site-header">
       <button className="mobile-menu icon-btn" onClick={() => setMenuOpen(!menuOpen)} aria-label="Abrir menu">{menuOpen ? <X/> : <Menu/>}</button>
       <a href="#inicio" className="brand" aria-label="Universo das Barbies - início"><img className="brand-logo" src="/logo-universo.webp" alt="Universo das Barbies" /></a>
@@ -62,7 +62,7 @@ function Storefront() {
       <div className="catalog-note">Os artigos apresentados são exemplos visuais. Confirma disponibilidade e preço pelo WhatsApp.</div>
       {cartCount>0 && <div className="order-bar"><div><b>{cartCount} {cartCount===1?"artigo selecionado":"artigos selecionados"}</b><small>{money(cartTotal)} · Lista de encomenda</small><div className="order-quantities">{cartProducts.map(p=><span key={p.id}>{p.name}: {cart[p.id]} <button aria-label={"Remover uma unidade de "+p.name} onClick={()=>setCart(c=>({...c,[p.id]:Math.max(0,(c[p.id]??0)-1)}))}>−</button></span>)}</div></div><a href={WA+"?text="+orderMessage(cartProducts)} target="_blank" rel="noreferrer">Enviar encomenda <ArrowUpRight size={17}/></a><button aria-label="Limpar lista" onClick={()=>setCart({})}><X size={17}/></button></div>}
     </section>
-    <section className="editorial" id="sobre"><div className="editorial-image"><img src="/fundadora.webp" alt="Fundadora do Universo das Barbies"/><span>O TEU BRILHO É ÚNICO</span></div><div className="editorial-copy"><span className="eyebrow">MAIS DO QUE UMA LOJA</span><h2>O teu estilo merece um lugar <em>especial.</em></h2><p>O Universo das Barbies é um espaço dedicado à mulher moderna, onde encontrarás produtos de moda, beleza, acessórios e utilidades que acompanham o teu estilo e o teu dia a dia.</p><p>A nossa missão é proporcionar uma experiência de compra agradável, com produtos selecionados para valorizar a beleza, a confiança e a personalidade de cada mulher.</p><a className="btn-primary" href={WA} target="_blank" rel="noreferrer">Conhece-nos melhor <ArrowRight size={17}/></a><div className="signature">Com carinho, <b>Universo das Barbies ♡</b></div></div></section>
+    <section className="editorial" id="sobre"><div className="editorial-image"><img src="/fundadora.webp" alt="Fundadora do Universo das Barbies"/><span>O TEU BRILHO É ÚNICO</span></div><div className="editorial-copy"><span className="eyebrow">A EMPRESÁRIA POR TRÁS DA MARCA</span><h2>Uma visão que começou <em>cedo.</em></h2><h3 className="founder-name">Adrileia Caizer</h3><p>Jovem, inteligente e determinada, Adrileia Caizer começou a investir desde cedo, acreditando no valor de construir o seu próprio caminho e transformar ideias em oportunidades.</p><p>É com essa visão empreendedora que nasce e cresce o Universo das Barbies: uma marca que procura unir beleza, estilo e confiança, criando uma experiência especial para cada cliente.</p><p className="founder-quote">“Acreditar numa ideia é o primeiro passo para lhe dar vida.”</p><a className="btn-primary" href={WA} target="_blank" rel="noreferrer">Fala com a nossa equipa <ArrowRight size={17}/></a><div className="signature">Com visão e dedicação, <b>Adrileia Caizer ♡</b></div></div></section>
     <section className="quote-section"><span>✦</span><p aria-hidden="true"> </p><h2>A beleza começa quando te sentes <em>bem contigo.</em></h2><small>UNIVERSO DAS BARBIES · BELEZA, ESTILO, ATITUDE</small></section>
     <section className="contact-section" id="contactos"><div><span className="eyebrow">VAMOS CONVERSAR?</span><h2>Estamos à distância<br/>de uma <em>mensagem.</em></h2><p>Encontraste algo de que gostas ou precisas de ajuda? Fala connosco. Teremos todo o gosto em atender-te.</p><a className="btn-light" href={WA} target="_blank" rel="noreferrer">Conversar no WhatsApp <ArrowUpRight size={17}/></a></div><div className="contact-details"><a href="tel:+244939292721">+244 939 292 721</a><a href="mailto:universodasberbies27@gmail.com">universodasberbies27@gmail.com</a><div className="socials"><a href="https://www.instagram.com/universo_dasbarbies" target="_blank" rel="noreferrer"><Instagram size={18}/> Instagram</a><a href="https://www.tiktok.com/@universo.das.barb" target="_blank" rel="noreferrer">♪ TikTok</a><a href="https://www.facebook.com/share/1FX7oY4Eco/" target="_blank" rel="noreferrer">f Facebook</a></div></div></section>
     <footer><a href="#inicio" className="footer-wordmark">Universo <em>das Barbies</em></a><p>Um universo pensado para ti.</p><div className="footer-bottom"><span>© Universo das Barbies. Todos os direitos reservados.</span><a href="#inicio">Voltar ao topo ↑</a></div></footer>
