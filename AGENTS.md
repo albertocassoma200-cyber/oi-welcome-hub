@@ -28,3 +28,7 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+## Store media
+
+- Reference uploaded storefront images through imported Lovable Assets `.asset.json` pointers so source-controlled code contains CDN-managed pointers, not copies of uploaded media.

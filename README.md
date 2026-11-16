@@ -6,7 +6,7 @@ Loja online em português de Angola, com identidade visual rosa, branca e preta.
 
 - Página de apresentação e catálogo visual em `src/routes/index.tsx`.
 - Pesquisa, filtros por categoria, favoritos e lista de encomenda para WhatsApp.
-- Os artigos e preços actualmente visíveis no código são **demonstrações**. Não representam stock, preços ou disponibilidade reais.
+- O catálogo apresenta os nove produtos e preços indicados nas fotografias fornecidas. O stock e a disponibilidade devem ser confirmados pelo WhatsApp.
 - A integração com Supabase está preparada ao nível do esquema, mas ainda não está ligada à interface. Não existe autenticação administrativa activa nesta versão.
 
 ## Preparar o Supabase
