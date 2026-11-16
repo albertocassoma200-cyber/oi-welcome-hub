@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { ArrowRight, ArrowUpRight, Check, Heart, Instagram, Menu, Plus, Search, ShoppingBag, MessageCircle, Moon, Sun, X } from "lucide-react";
 import portrait from "@/assets/storefront-portrait.jpg.asset.json";
 import thermalCup from "@/assets/catalog/thermal-cup-catalog.jpg.asset.json";
@@ -62,7 +62,7 @@ function Storefront() {
   const cartCount = Object.values(cart).reduce((sum, quantity) => sum + quantity, 0);
   const cartTotal = cartProducts.reduce((sum, p) => sum + p.price * (cart[p.id] ?? 0), 0);
   const orderMessage = (items: typeof products) => encodeURIComponent("Olá, Universo das Barbies! Gostaria de fazer uma encomenda.\n\nDADOS DO COMPRADOR\nNome: " + buyer.name.trim() + "\nTelefone: " + buyer.phone.trim() + "\nProvíncia: " + buyer.province.trim() + "\nMunicípio: " + buyer.municipality.trim() + "\nBairro: " + buyer.neighborhood.trim() + "\nObservações: " + (buyer.note.trim() || "Nenhuma") + "\n\nPRODUTOS\n" + items.map(p => "• " + p.name + " × " + cart[p.id] + " — " + money(p.price * (cart[p.id] ?? 0))).join("\n") + "\n\nTotal estimado: " + money(cartTotal) + "\n\nAguardo confirmação da disponibilidade e entrega.");
-  const submitCheckout = (event: React.FormEvent<HTMLFormElement>) => {
+  const submitCheckout = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!cartCount) return;
     window.open(WA + "?text=" + orderMessage(cartProducts), "_blank", "noopener,noreferrer");
