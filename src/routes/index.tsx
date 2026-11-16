@@ -29,8 +29,10 @@ function Storefront() {
   const [notice, setNotice] = useState("");
   const [favorites, setFavorites] = useState<number[]>([]);
   const filtered = useMemo(() => products.filter(p => (category === "Todos" || p.category === category) && p.name.toLowerCase().includes(query.toLowerCase())), [category, query]);
-  const cartProducts = products.filter(p => (cart[p.id] ?? 0) > 0);\n  const cartCount = Object.values(cart).reduce((sum, quantity) => sum + quantity, 0);\n  const cartTotal = cartProducts.reduce((sum, p) => sum + p.price * (cart[p.id] ?? 0), 0);
-  const orderMessage = (items: typeof products) => encodeURIComponent("Olá, Universo das Barbies! Gostaria de fazer uma encomenda:\n\n" + items.map(p => "• " + p.name + " — " + money(p.price)).join("\n") + "\n\nPodem informar-me sobre disponibilidade e entrega?");
+  const cartProducts = products.filter(p => (cart[p.id] ?? 0) > 0);
+  const cartCount = Object.values(cart).reduce((sum, quantity) => sum + quantity, 0);
+  const cartTotal = cartProducts.reduce((sum, p) => sum + p.price * (cart[p.id] ?? 0), 0);
+  const orderMessage = (items: typeof products) => encodeURIComponent("Olá, Universo das Barbies! Gostaria de fazer uma encomenda:\n\n" + items.map(p => "• " + p.name + " × " + cart[p.id] + " — " + money(p.price * (cart[p.id] ?? 0))).join("\n") + "\n\nPodem informar-me sobre disponibilidade e entrega?");
 
   return <main>
     <div className="announcement"><Sparkles size={13}/> O teu universo de beleza, estilo e confiança <span>•</span> Atendimento em Angola</div>
