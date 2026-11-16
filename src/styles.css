@@ -149,3 +149,38 @@ button:active,.btn-primary:active,.header-cta:active{transform:scale(.97)}
  .footer-wordmark{font-size:21px}
 }
 @media(prefers-reduced-motion:reduce){.whatsapp-float{animation:none}}
+
+
+/* Tema claro/escuro e perfil da empresária */
+.theme-switch{display:flex;align-items:center;gap:3px;padding:4px;border:1px solid #efdae5;border-radius:999px;background:#fff7fb}
+.theme-choice{width:31px;height:31px;border-radius:50%;display:grid;place-items:center;background:transparent;color:#8b7180;transition:all .22s ease}
+.theme-choice:hover{transform:rotate(-12deg);color:var(--pink)}
+.theme-choice.active{background:#ed087f;color:#fff;box-shadow:0 3px 10px #ed087f35}
+.founder-name{font:600 21px var(--serif);color:var(--pink);margin:16px 0 14px}
+.founder-quote{border-left:3px solid var(--pink);padding:10px 0 10px 17px;font:italic 16px/1.6 var(--serif);color:#a34c79!important;margin:24px 0!important}
+.theme-dark{--ink:#f8edf3;--muted:#c4b2bc;--line:#493440;color:var(--ink);background:#171017;min-height:100vh}
+.theme-dark .site-header,.theme-dark .main-nav,.theme-dark .search-bar{background:#211720;border-color:#493440;color:#f8edf3}
+.theme-dark .main-nav a,.theme-dark .icon-btn,.theme-dark .search-bar input,.theme-dark .search-bar button{color:#f8edf3}
+.theme-dark .theme-switch{background:#30212c;border-color:#614054}
+.theme-dark .theme-choice{color:#d8c3ce}
+.theme-dark .theme-choice.active{background:#ed087f;color:#fff}
+.theme-dark .hero{background:radial-gradient(circle at 78% 42%,#49243a 0,transparent 38%),linear-gradient(115deg,#251923,#301d2b 60%,#3b2132)}
+.theme-dark .hero-copy>p,.theme-dark .hero-note,.theme-dark .hero-bottom,.theme-dark .hero-caption{color:#d1bdc8}
+.theme-dark .benefits,.theme-dark .editorial,.theme-dark .products-section{background:#1c141c;border-color:#493440}
+.theme-dark .benefits b,.theme-dark .product-info h3,.theme-dark .product-bottom b{color:#f8edf3}
+.theme-dark .benefits small,.theme-dark .section-sub,.theme-dark .catalog-note{color:#c4b2bc}
+.theme-dark .section{background-color:#1b141b}
+.theme-dark .product-card,.theme-dark .product-tools select,.theme-dark .filter-search{background:#2a1e28;border-color:#4b3442;color:#f8edf3}
+.theme-dark .product-info>span{color:#d1a9bd}
+.theme-dark .product-tag,.theme-dark .favorite{background:#f8edf3;color:#4a263a}
+.theme-dark .product-bottom button{background:#352431;border-color:#86506d;color:#ff8ac5}
+.theme-dark .quote-section{background:#291b27}
+.theme-dark .quote-section small{color:#d0b8c6}
+.theme-dark .editorial-copy p{color:#d1c0c9}
+.theme-dark .founder-quote{color:#ff9acb!important}
+.theme-dark .modal-backdrop .product-modal{background:#281d27;color:#fff}
+.theme-dark .product-modal p{color:#d1c0c9}
+.theme-dark .order-bar{background:#09070a}
+.theme-dark footer{background:#100b10}
+.theme-dark .empty-state{color:#d1c0c9}
+@media(max-width:720px){.theme-switch{gap:1px;padding:3px}.theme-choice{width:27px;height:27px}.header-actions{gap:5px}}
