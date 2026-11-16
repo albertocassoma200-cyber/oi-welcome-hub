@@ -155,14 +155,8 @@ on public.products for all to authenticated
 using ((select public.is_admin()))
 with check ((select public.is_admin()));
 
--- Customers can submit an order, but cannot read or alter orders after submission.
-create policy "Visitors can submit pending orders"
-on public.orders for insert to anon, authenticated
-with check (
-  status = 'pending'
-  and (customer_id is null or customer_id = (select auth.uid()))
-);
-
+-- Orders are submitted through a server-side transaction below. Direct public
+-- inserts are intentionally not allowed, preventing forged totals or missing items.
 create policy "Admins manage orders"
 on public.orders for all to authenticated
 using ((select public.is_admin()))
@@ -175,3 +169,98 @@ with check ((select public.is_admin()));
 
 -- Only authenticated admins can promote a user. Run manually in the SQL Editor:
 -- update public.profiles set role = 'admin' where id = '<AUTH_USER_UUID>';
+
+-- Submit an order atomically: prices and totals are always read from the database,
+-- stock is locked and decremented in the same transaction, and item snapshots are saved.
+create or replace function public.submit_order(
+  p_customer_name text,
+  p_customer_phone text,
+  p_delivery_address text,
+  p_customer_note text,
+  p_items jsonb
+)
+returns uuid
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  v_order_id uuid;
+  v_total bigint := 0;
+  v_line record;
+  v_product public.products%rowtype;
+begin
+  if char_length(trim(coalesce(p_customer_name, ''))) not between 2 and 120 then
+    raise exception 'Nome inválido.';
+  end if;
+  if char_length(trim(coalesce(p_customer_phone, ''))) not between 6 and 30 then
+    raise exception 'Número de telefone inválido.';
+  end if;
+  if p_items is null or jsonb_typeof(p_items) <> 'array'
+     or jsonb_array_length(p_items) < 1 or jsonb_array_length(p_items) > 20 then
+    raise exception 'A encomenda deve conter entre 1 e 20 artigos.';
+  end if;
+
+  -- Aggregate repeated product IDs so stock cannot be bypassed with duplicate lines.
+  for v_line in
+    select item.product_id, sum(item.quantity)::integer as quantity
+    from jsonb_to_recordset(p_items) as item(product_id uuid, quantity integer)
+    group by item.product_id
+  loop
+    if v_line.product_id is null or v_line.quantity is null or v_line.quantity < 1 then
+      raise exception 'Artigo ou quantidade inválida.';
+    end if;
+
+    select * into v_product
+    from public.products
+    where id = v_line.product_id and is_active = true
+    for update;
+
+    if not found then
+      raise exception 'Um dos artigos já não está disponível.';
+    end if;
+    if v_product.stock_quantity < v_line.quantity then
+      raise exception 'Stock insuficiente para: %.', v_product.name;
+    end if;
+
+    v_total := v_total + (v_product.price_aoa::bigint * v_line.quantity);
+  end loop;
+
+  if v_total > 2147483647 then
+    raise exception 'O valor total da encomenda é demasiado elevado.';
+  end if;
+
+  insert into public.orders (
+    customer_id, customer_name, customer_phone, delivery_address,
+    customer_note, status, total_aoa
+  ) values (
+    (select auth.uid()), trim(p_customer_name), trim(p_customer_phone),
+    nullif(trim(coalesce(p_delivery_address, '')), ''),
+    nullif(trim(coalesce(p_customer_note, '')), ''),
+    'pending', v_total::integer
+  ) returning id into v_order_id;
+
+  for v_line in
+    select item.product_id, sum(item.quantity)::integer as quantity
+    from jsonb_to_recordset(p_items) as item(product_id uuid, quantity integer)
+    group by item.product_id
+  loop
+    select * into v_product from public.products where id = v_line.product_id;
+    insert into public.order_items (
+      order_id, product_id, product_name, unit_price_aoa, quantity
+    ) values (
+      v_order_id, v_product.id, v_product.name, v_product.price_aoa, v_line.quantity
+    );
+    update public.products
+    set stock_quantity = stock_quantity - v_line.quantity
+    where id = v_product.id;
+  end loop;
+
+  return v_order_id;
+end;
+$$;
+
+revoke all on function public.submit_order(text, text, text, text, jsonb) from public;
+grant execute on function public.submit_order(text, text, text, text, jsonb) to anon, authenticated;
+revoke insert, update, delete on public.orders from anon;
+revoke insert, update, delete on public.order_items from anon;
