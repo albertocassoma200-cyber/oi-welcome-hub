@@ -17,7 +17,8 @@ const products = [
   { id: 3, name: "Kit de autocuidado", category: "Cuidados pessoais", price: 12500, image: "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=900&q=85", tag: "Novidade" },
   { id: 4, name: "Look casual feminino", category: "Moda feminina", price: 32000, image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=900&q=85", tag: "Em destaque" },
 ];
-type Product = (typeof products)[number];\nconst money = (n: number) => new Intl.NumberFormat("pt-AO", { style: "currency", currency: "AOA", maximumFractionDigits: 0 }).format(n);
+type Product = (typeof products)[number];
+const money = (n: number) => new Intl.NumberFormat("pt-AO", { style: "currency", currency: "AOA", maximumFractionDigits: 0 }).format(n);
 
 function Storefront() {
   const [menuOpen, setMenuOpen] = useState(false);
