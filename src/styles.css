@@ -246,3 +246,48 @@ body{color:#24131d}
  .editorial-placeholder{min-height:390px}
 }
 @media(max-width:390px){.main-nav a{font-size:12px}.theme-choice{width:27px;height:27px}}
+
+/* Ajustes finais de legibilidade e navegação — novembro 2026 */
+:root{--pink:#c90068;--ink:#21131b;--muted:#55434d}
+body{color:#21131b}
+.site-header{min-height:88px}
+.main-nav{gap:7px}
+.main-nav a{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:10px 15px;border:1px solid transparent;border-radius:999px;color:#35232d;font-size:12px;font-weight:700;letter-spacing:.015em}
+.main-nav a:hover,.main-nav a:focus-visible{background:#f9e2ed;border-color:#edb8d0;color:#97004d;outline:none;box-shadow:0 4px 12px rgba(157,0,78,.08)}
+.main-nav a:focus-visible,.header-actions a:focus-visible,.header-actions button:focus-visible,.btn-primary:focus-visible,.btn-link:focus-visible,.text-arrow:focus-visible{outline:3px solid #f29ac2;outline-offset:3px}
+.hero-copy>p,.editorial-copy>p,.contact-section>div>p{color:#493741;font-size:15px;line-height:1.95}
+.hero-note,.hero-bottom,.hero-caption{color:#55414d}
+.eyebrow{color:#a90058;font-size:10px;font-weight:800}
+.benefits b{color:#2b1b25;font-size:12px;font-weight:800}
+.benefits small,.section-sub,.catalog-note{color:#5b4853;font-size:12px;line-height:1.7}
+.section-heading h2,.editorial h2,.contact-section h2{color:#21131b}
+.product-info>span{color:#85234f;font-weight:800}
+.product-info h3{color:#24131d;font-size:16px;line-height:1.45}
+.product-bottom b{color:#21131b;font-size:14px;font-weight:800}
+.btn-link,.text-arrow{color:#85004a;font-size:13px;font-weight:800}
+.category-info b{text-shadow:0 2px 9px rgba(0,0,0,.75)}
+.category-info small{text-shadow:0 2px 7px rgba(0,0,0,.8)}
+.product-tools select,.filter-search{min-height:42px;border-radius:12px}
+.theme-switch{box-shadow:0 3px 12px rgba(70,20,48,.06)}
+.founder-placeholder{min-height:420px}
+.theme-dark .site-header,.theme-dark .search-bar{background:#1c151d;border-color:#594052}
+.theme-dark .main-nav a{color:#fff0f7;border-color:transparent}
+.theme-dark .main-nav a:hover,.theme-dark .main-nav a:focus-visible{background:#4a2a3e;border-color:#79506a;color:#fff}
+.theme-dark .hero-copy>p,.theme-dark .editorial-copy>p,.theme-dark .hero-note,.theme-dark .hero-bottom,.theme-dark .hero-caption{color:#f4e5ed}
+.theme-dark .benefits{background:#1b141c;border-color:#594052}
+.theme-dark .benefits b,.theme-dark .product-info h3,.theme-dark .product-bottom b,.theme-dark .section-heading h2,.theme-dark .editorial h2{color:#fff4f9}
+.theme-dark .benefits small,.theme-dark .section-sub,.theme-dark .catalog-note{color:#e4d1dc}
+.theme-dark .btn-link,.theme-dark .text-arrow{color:#ffadd1}
+.theme-dark .product-card{background:#2a1e28;border-color:#614458}
+.theme-dark .product-info>span{color:#ffc0dc}
+.theme-dark .founder-placeholder{border-color:#624158}
+.theme-dark .contact-section{background:linear-gradient(115deg,#a90059,#6f1745)}
+@media(max-width:1000px){.main-nav a{padding:9px 10px;font-size:11px}}
+@media(max-width:720px){
+ .site-header{min-height:72px}
+ .main-nav{padding:14px 5% 20px;gap:8px}
+ .main-nav a{justify-content:flex-start;min-height:44px;padding:11px 14px;border:1px solid #efd3e1;border-radius:12px;font-size:13px}
+ .hero-copy>p,.editorial-copy>p,.contact-section>div>p{font-size:14px}
+ .benefits b{font-size:11px}.benefits small{font-size:10px}
+ .product-info h3{font-size:14px}
+}
