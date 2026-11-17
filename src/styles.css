@@ -406,3 +406,16 @@ html{scroll-behavior:auto!important}
 #lovable-badge {
   display: none !important;
 }
+
+
+/* Interacção e quantidade de produtos */
+.product-quantity{display:flex;align-items:center;gap:9px}
+.product-bottom .product-quantity .quantity-action{width:36px;height:36px;border-radius:50%;border:0;background:var(--pink);color:#fff;box-shadow:0 4px 12px #ec008c30;transition:transform .18s,box-shadow .18s}
+.product-bottom .product-quantity .quantity-action:hover{background:#c90076;box-shadow:0 6px 16px #ec008c40;transform:translateY(-1px)}
+.product-quantity span{min-width:18px;text-align:center;font-size:12px;font-weight:800;color:var(--pink)}
+.checkout-form select{width:100%;border:1px solid #dfd2d9;border-radius:8px;background:#fff;color:#251b20;padding:12px 13px;font:13px 'DM Sans',sans-serif;outline:none}
+.checkout-form select:focus{border-color:var(--pink);box-shadow:0 0 0 3px color-mix(in srgb,var(--pink) 13%,transparent)}
+.field-hint{font-size:10px;font-weight:400;color:#8b7b84}
+.whatsapp-float{animation:whatsapp-soft-blink 1.8s ease-in-out infinite;will-change:transform,box-shadow}
+@keyframes whatsapp-soft-blink{0%,100%{transform:scale(1);box-shadow:0 5px 20px #1b8d4b55}50%{transform:scale(1.08);box-shadow:0 7px 26px #1b8d4b88}}
+@media (prefers-reduced-motion:reduce){.whatsapp-float{animation:none}.product-bottom .product-quantity .quantity-action{transition:none}}
