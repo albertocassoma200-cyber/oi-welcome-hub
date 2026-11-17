@@ -419,3 +419,7 @@ html{scroll-behavior:auto!important}
 .whatsapp-float{animation:whatsapp-soft-blink 1.8s ease-in-out infinite;will-change:transform,box-shadow}
 @keyframes whatsapp-soft-blink{0%,100%{transform:scale(1);box-shadow:0 5px 20px #1b8d4b55}50%{transform:scale(1.08);box-shadow:0 7px 26px #1b8d4b88}}
 @media (prefers-reduced-motion:reduce){.whatsapp-float{animation:none}.product-bottom .product-quantity .quantity-action{transition:none}}
+
+/* Resposta visual ao toque, sem produzir som */
+button, a, [role="button"]{ -webkit-tap-highlight-color:transparent; touch-action:manipulation; }
+button:active, a:active, [role="button"]:active{ transform:scale(.97); }
