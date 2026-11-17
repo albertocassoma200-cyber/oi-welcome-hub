@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { ArrowRight, ArrowUpRight, Check, Heart, Instagram, Menu, Minus, Plus, Search, ShoppingBag, MessageCircle, Moon, Sun, X } from "lucide-react";
 import portrait from "@/assets/storefront-portrait.jpg.asset.json";
 import thermalCup from "@/assets/catalog/thermal-cup-catalog.jpg.asset.json";
@@ -65,35 +65,14 @@ function Storefront() {
   const [buyer, setBuyer] = useState({ name: "", phone: "", province: "", municipality: "", neighborhood: "", note: "" });
   const [notice, setNotice] = useState("");
   const [favorites, setFavorites] = useState<number[]>([]);
-  const audioContext = useRef<AudioContext | null>(null);
   useEffect(() => {
-    const onInteractiveClick = (event: MouseEvent) => {
+    const triggerHaptic = (event: Event) => {
       const target = event.target as HTMLElement | null;
-      if (!target?.closest("button, [role='button']")) return;
-      if ("vibrate" in navigator) navigator.vibrate(12);
-      try {
-        const AudioContextClass = window.AudioContext;
-        if (!AudioContextClass) return;
-        const audio = audioContext.current ?? new AudioContextClass();
-        audioContext.current = audio;
-        if (audio.state === "suspended") void audio.resume();
-        const oscillator = audio.createOscillator();
-        const gain = audio.createGain();
-        oscillator.type = "sine";
-        oscillator.frequency.value = 880;
-        gain.gain.setValueAtTime(0.06, audio.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, audio.currentTime + 0.07);
-        oscillator.connect(gain);
-        gain.connect(audio.destination);
-        oscillator.start();
-        oscillator.stop(audio.currentTime + 0.07);
-      } catch { /* O som é opcional e depende do navegador. */ }
+      if (!target?.closest("button, a, [role='button']")) return;
+      if (typeof navigator !== "undefined" && "vibrate" in navigator) navigator.vibrate(10);
     };
-    document.addEventListener("click", onInteractiveClick, true);
-    return () => {
-      document.removeEventListener("click", onInteractiveClick, true);
-      if (audioContext.current) void audioContext.current.close();
-    };
+    document.addEventListener("pointerdown", triggerHaptic, { capture: true, passive: true });
+    return () => document.removeEventListener("pointerdown", triggerHaptic, true);
   }, []);
   const filtered = useMemo(() => products.filter(p => (category === "Todos" || p.category === category) && p.name.toLowerCase().includes(query.toLowerCase())), [category, query]);
   const cartProducts = products.filter(p => (cart[p.id] ?? 0) > 0);
