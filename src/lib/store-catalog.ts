@@ -7,6 +7,9 @@ import skincareDevice from "@/assets/catalog/skincare-device-catalog.jpg.asset.j
 import pimplePatches from "@/assets/catalog/pimple-patches-catalog.jpg.asset.json";
 import turmericSoap from "@/assets/catalog/turmeric-soap-catalog.jpg.asset.json";
 import makeupBag from "@/assets/catalog/makeup-bag-catalog.jpg.asset.json";
+import bodyLotion from "@/assets/catalog/body-lotion-catalog.jpg.asset.json";
+import lipBalm from "@/assets/catalog/lip-balm-catalog.jpg.asset.json";
+import dearBodySet from "@/assets/catalog/dear-body-set-catalog.jpg.asset.json";
 
 export const catalogDetails = [
   { id: 1, name: "Body spray", category: "Beleza & cosméticos", price: 3500, image: bodySpray.url, tag: "Fragrância" },
@@ -18,6 +21,9 @@ export const catalogDetails = [
   { id: 7, name: "Adesivos para espinhas", category: "Cuidados pessoais", price: 1500, image: pimplePatches.url, tag: "Cuidados de pele" },
   { id: 8, name: "Sabão de açafrão", category: "Cuidados pessoais", price: 2800, image: turmericSoap.url, tag: "Autocuidado" },
   { id: 9, name: "Nécessaire", category: "Bolsas & acessórios", price: 2500, image: makeupBag.url, tag: "Acessório" },
+  { id: 10, name: "Loção corporal", category: "Cuidados pessoais", price: 2500, image: bodyLotion.url, tag: "Hidratação" },
+  { id: 11, name: "Hidratante labial", category: "Cuidados pessoais", price: 1500, image: lipBalm.url, tag: "Cuidados de pele" },
+  { id: 12, name: "Conjunto Dear Body", category: "Beleza & cosméticos", price: 5500, image: dearBodySet.url, tag: "Conjunto" },
 ];
 
 export const formatCatalogPrice = (amount: number) =>
