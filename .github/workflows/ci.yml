@@ -38,6 +38,7 @@ jobs:
       - name: Formatar ficheiros da loja
         run: bunx prettier --write src/lib/supabase.ts src/routes/admin.tsx src/routes/index.tsx src/lib/store-catalog.ts src/test/store-catalog.test.ts src/test/app-routing.test.tsx src/routes/__root.tsx
       - name: Registar formatação
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
           if ! git diff --quiet; then
             git config user.name "github-actions[bot]"
