@@ -25,7 +25,7 @@ jobs:
       - name: Instalar dependências
         run: bun install --frozen-lockfile
       - name: Formatar ficheiros da loja
-        run: bunx prettier --write src/lib/supabase.ts src/routes/admin.tsx src/routes/index.tsx src/lib/store-catalog.ts src/test/store-catalog.test.ts
+        run: bunx prettier --write src/lib/supabase.ts src/routes/admin.tsx src/routes/index.tsx src/lib/store-catalog.ts src/test/store-catalog.test.ts src/routes/__root.tsx
       - name: Registar formatação
         run: |
           if ! git diff --quiet; then
