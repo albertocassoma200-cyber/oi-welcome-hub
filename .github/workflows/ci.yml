@@ -1,0 +1,32 @@
+name: Verificações da aplicação
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: checks-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Lint, testes e build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Obter código
+        uses: actions/checkout@v4
+      - name: Preparar Bun
+        uses: oven-sh/setup-bun@v2
+      - name: Instalar dependências
+        run: bun install --frozen-lockfile
+      - name: Verificar lint
+        run: bun run lint
+      - name: Executar testes
+        run: bun run test
+      - name: Criar build de produção
+        run: bun run build
