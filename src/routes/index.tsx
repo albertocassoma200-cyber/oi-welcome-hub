@@ -36,7 +36,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Descobre os produtos de beleza, cuidados pessoais e acessórios do Universo das Barbies, em Angola. Encomendas pelo WhatsApp.",
+          "Descobre produtos de beleza, cuidados pessoais e acessórios no Universo das Barbies. Consulta o catálogo e regista a tua encomenda online em Angola.",
       },
       { property: "og:title", content: "Universo das Barbies | Beleza, estilo e acessórios" },
       {
@@ -332,7 +332,7 @@ function Storefront() {
           </h1>
           <p>
             Beleza, cuidados pessoais e acessórios escolhidos para realçar a tua essência. Encontra
-            os teus favoritos e encomenda facilmente pelo WhatsApp.
+            os teus favoritos e regista a encomenda directamente na loja.
           </p>
           <div className="hero-actions">
             <a className="btn-primary" href="#produtos">
@@ -385,7 +385,7 @@ function Storefront() {
           <span className="benefit-icon">↗</span>
           <p>
             <b>Encomenda simples</b>
-            <small>Fala connosco pelo WhatsApp</small>
+            <small>Regista a tua encomenda online</small>
           </p>
         </div>
         <div>
