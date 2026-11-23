@@ -164,7 +164,9 @@ async function readError(response: Response) {
   );
 }
 
-async function refreshSession() {
+let refreshInFlight: Promise<SupabaseSession | null> | null = null;
+
+async function performSessionRefresh() {
   const current = readSession();
   if (!current) return null;
 
@@ -184,6 +186,16 @@ async function refreshSession() {
   }
 
   return saveSession((await response.json()) as AuthResponse);
+}
+
+function refreshSession() {
+  if (!refreshInFlight) {
+    refreshInFlight = performSessionRefresh().finally(() => {
+      refreshInFlight = null;
+    });
+  }
+
+  return refreshInFlight;
 }
 
 async function accessToken() {
