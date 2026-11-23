@@ -21,7 +21,13 @@ import thermalCup from "@/assets/catalog/thermal-cup-catalog.jpg.asset.json";
 import makeupSet from "@/assets/catalog/makeup-set-catalog.jpg.asset.json";
 import skincareDevice from "@/assets/catalog/skincare-device-catalog.jpg.asset.json";
 import makeupBag from "@/assets/catalog/makeup-bag-catalog.jpg.asset.json";
-import { catalogDetails, formatCatalogPrice } from "@/lib/store-catalog";
+import {
+  isSupabaseConfigured,
+  loadStorefrontCatalog,
+  submitStoreOrder,
+  type StorefrontCategory,
+  type StorefrontProduct,
+} from "@/lib/supabase";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -64,7 +70,7 @@ const categories = [
     count: "Pequenos favoritos do dia a dia",
   },
 ];
-const products = catalogDetails;
+
 const provinceCapitals: Record<string, string> = {
   Bengo: "Dande",
   Benguela: "Benguela",
@@ -89,8 +95,9 @@ const provinceCapitals: Record<string, string> = {
   Zaire: "Mbanza Kongo",
 };
 const provinces = Object.keys(provinceCapitals).sort((a, b) => a.localeCompare(b, "pt"));
-type Product = (typeof products)[number];
-const money = formatCatalogPrice;
+type Product = StorefrontProduct;
+const money = (amount: number) =>
+  `${new Intl.NumberFormat("pt-AO", { maximumFractionDigits: 0 }).format(amount)} Kz`;
 
 function Storefront() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -102,10 +109,42 @@ function Storefront() {
   useEffect(() => {
     window.localStorage.setItem("universo-barbies-theme", theme);
   }, [theme]);
+  useEffect(() => {
+    let active = true;
+
+    loadStorefrontCatalog()
+      .then(({ products: loadedProducts, categories: loadedCategories }) => {
+        if (!active) return;
+        setProducts(loadedProducts);
+        setLiveCategories(loadedCategories);
+        setCatalogStatus("ready");
+      })
+      .catch((cause) => {
+        if (!active) return;
+        setCatalogStatus("error");
+        const message =
+          cause instanceof Error ? cause.message : "Não foi possível carregar o catálogo.";
+        setCatalogError(
+          isSupabaseConfigured()
+            ? message
+            : "O catálogo real ainda não está ligado. Contacta-nos pelo WhatsApp enquanto a loja é configurada.",
+        );
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("Todos");
-  const [cart, setCart] = useState<Record<number, number>>({});
+  const [products, setProducts] = useState<Product[]>([]);
+  const [liveCategories, setLiveCategories] = useState<StorefrontCategory[]>([]);
+  const [catalogStatus, setCatalogStatus] = useState<"loading" | "ready" | "error">("loading");
+  const [catalogError, setCatalogError] = useState("");
+  const [checkoutBusy, setCheckoutBusy] = useState(false);
+  const [checkoutError, setCheckoutError] = useState("");
+  const [cart, setCart] = useState<Record<string, number>>({});
   const [selected, setSelected] = useState<Product | null>(null);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [buyer, setBuyer] = useState({
@@ -117,7 +156,7 @@ function Storefront() {
     note: "",
   });
   const [notice, setNotice] = useState("");
-  const [favorites, setFavorites] = useState<number[]>([]);
+  const [favorites, setFavorites] = useState<string[]>([]);
   useEffect(() => {
     const triggerHaptic = (event: Event) => {
       const target = event.target as HTMLElement | null;
@@ -132,42 +171,66 @@ function Storefront() {
       products.filter(
         (p) =>
           (category === "Todos" || p.category === category) &&
-          p.name.toLowerCase().includes(query.toLowerCase()),
+          p.name.toLowerCase().includes(query.trim().toLowerCase()),
       ),
-    [category, query],
+    [products, category, query],
   );
   const cartProducts = products.filter((p) => (cart[p.id] ?? 0) > 0);
   const cartCount = Object.values(cart).reduce((sum, quantity) => sum + quantity, 0);
   const cartTotal = cartProducts.reduce((sum, p) => sum + p.price * (cart[p.id] ?? 0), 0);
-  const orderMessage = (items: typeof products) =>
-    encodeURIComponent(
-      "Olá, Universo das Barbies! Gostaria de fazer uma encomenda.\n\nDADOS DO COMPRADOR\nNome: " +
-        buyer.name.trim() +
-        "\nTelefone: " +
-        buyer.phone.trim() +
-        "\nProvíncia: " +
-        buyer.province.trim() +
-        "\nMunicípio: " +
-        buyer.municipality.trim() +
-        "\nBairro: " +
-        buyer.neighborhood.trim() +
-        "\nObservações: " +
-        (buyer.note.trim() || "Nenhuma") +
-        "\n\nPRODUTOS\n" +
-        items
-          .map(
-            (p) => "• " + p.name + " × " + cart[p.id] + " — " + money(p.price * (cart[p.id] ?? 0)),
-          )
-          .join("\n") +
-        "\n\nTotal estimado: " +
-        money(cartTotal) +
-        "\n\nAguardo confirmação da disponibilidade e entrega.",
-    );
-  const submitCheckout = (event: FormEvent<HTMLFormElement>) => {
+  const submitCheckout = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!cartCount) return;
-    window.open(WA + "?text=" + orderMessage(cartProducts), "_blank", "noopener,noreferrer");
-    setCheckoutOpen(false);
+    if (!cartCount || checkoutBusy) return;
+
+    setCheckoutBusy(true);
+    setCheckoutError("");
+    try {
+      const orderId = await submitStoreOrder({
+        customerName: buyer.name.trim(),
+        customerPhone: buyer.phone.trim(),
+        deliveryAddress: [buyer.province, buyer.municipality, buyer.neighborhood]
+          .map((part) => part.trim())
+          .filter(Boolean)
+          .join(" · "),
+        customerNote: buyer.note.trim(),
+        items: cartProducts
+          .map((product) => ({
+            product_id: product.id,
+            quantity: cart[product.id] ?? 0,
+          }))
+          .filter((item) => item.quantity > 0),
+      });
+
+      setCart({});
+      setCheckoutOpen(false);
+      setBuyer({
+        name: "",
+        phone: "",
+        province: "",
+        municipality: "",
+        neighborhood: "",
+        note: "",
+      });
+      setNotice(
+        `Encomenda registada. Referência: ${orderId.slice(0, 8).toUpperCase()}.`,
+      );
+
+      try {
+        const refreshedCatalog = await loadStorefrontCatalog();
+        setProducts(refreshedCatalog.products);
+        setLiveCategories(refreshedCatalog.categories);
+      } catch {
+        setCatalogError("A encomenda foi registada, mas não foi possível actualizar o catálogo.");
+      }
+    } catch (cause) {
+      setCheckoutError(
+        cause instanceof Error
+          ? cause.message
+          : "Não foi possível registar a encomenda. Tenta novamente.",
+      );
+    } finally {
+      setCheckoutBusy(false);
+    }
   };
 
   return (
@@ -386,8 +449,10 @@ function Storefront() {
               aria-label="Filtrar por categoria"
             >
               <option>Todos</option>
-              {categories.map((c) => (
-                <option key={c.name}>{c.name}</option>
+              {liveCategories.map((c) => (
+                <option key={c.id} value={c.name}>
+                  {c.name}
+                </option>
               ))}
             </select>
             <button className="filter-search" onClick={() => setSearchOpen(!searchOpen)}>
@@ -411,7 +476,13 @@ function Storefront() {
                 }}
                 onClick={() => setSelected(p)}
               >
-                <img src={p.image} alt={p.name} />
+                {p.image ? (
+                  <img src={p.image} alt={p.name} loading="lazy" />
+                ) : (
+                  <div className="flex h-full min-h-48 items-center justify-center bg-pink-50 px-4 text-center text-sm text-pink-700">
+                    Imagem não disponível
+                  </div>
+                )}
                 <span className="product-tag">{p.tag}</span>
                 <button
                   className={favorites.includes(p.id) ? "favorite active" : "favorite"}
@@ -454,8 +525,12 @@ function Storefront() {
                       type="button"
                       className="quantity-action"
                       aria-label={"Adicionar uma unidade de " + p.name}
+                      disabled={p.stockQuantity <= 0 || (cart[p.id] ?? 0) >= p.stockQuantity}
                       onClick={() => {
-                        setCart((c) => ({ ...c, [p.id]: (c[p.id] ?? 0) + 1 }));
+                        setCart((c) => ({
+                          ...c,
+                          [p.id]: Math.min(p.stockQuantity, (c[p.id] ?? 0) + 1),
+                        }));
                         setNotice(p.name + " adicionado à encomenda.");
                       }}
                     >
@@ -467,14 +542,26 @@ function Storefront() {
             </article>
           ))}
         </div>
-        {filtered.length === 0 && (
+        {catalogStatus === "loading" && (
+          <div className="empty-state" role="status">
+            A carregar os produtos disponíveis…
+          </div>
+        )}
+        {catalogStatus === "error" && (
+          <div className="empty-state" role="alert">
+            {catalogError}
+          </div>
+        )}
+        {catalogStatus === "ready" && filtered.length === 0 && (
           <div className="empty-state">
-            Não encontrámos produtos com essa pesquisa. Experimenta outra palavra.
+            {products.length === 0
+              ? "Ainda não existem produtos publicados. Volta em breve ou fala connosco."
+              : "Não encontrámos produtos com essa pesquisa. Experimenta outra palavra."}
           </div>
         )}
         <div className="catalog-note">
-          Catálogo ilustrativo: imagens, artigos e preços apresentados não confirmam stock nem
-          disponibilidade. Confirma sempre o preço e o artigo pelo WhatsApp antes de encomendar.
+          Os preços e o stock são consultados no catálogo da loja. A encomenda só é registada
+          depois de o servidor validar novamente o preço e a quantidade disponível.
         </div>
         {cartCount > 0 && (
           <div className="order-bar">
@@ -500,7 +587,7 @@ function Storefront() {
               </div>
             </div>
             <button type="button" onClick={() => setCheckoutOpen(true)}>
-              Pedir confirmação <ArrowUpRight size={17} />
+              Finalizar encomenda <ArrowUpRight size={17} />
             </button>
             <button aria-label="Limpar lista" onClick={() => setCart({})}>
               <X size={17} />
@@ -680,8 +767,8 @@ function Storefront() {
                 Dados do <em>comprador.</em>
               </h2>
               <p>
-                Preenche os teus dados para enviares um pedido de confirmação à equipa pelo
-                WhatsApp.
+                Preenche os teus dados para registar a encomenda. O preço e o stock serão
+                verificados antes da confirmação.
               </p>
             </div>
             <form className="checkout-form" onSubmit={submitCheckout}>
@@ -771,6 +858,11 @@ function Storefront() {
                   onChange={(e) => setBuyer({ ...buyer, note: e.target.value })}
                 />
               </label>
+              {checkoutError && (
+                <p role="alert" className="rounded-xl bg-red-50 p-3 text-sm text-red-700">
+                  {checkoutError}
+                </p>
+              )}
               <div className="checkout-summary">
                 <b>Produtos escolhidos e quantidades</b>
                 {cartProducts.map((p) => (
@@ -786,12 +878,13 @@ function Storefront() {
                   <strong>{money(cartTotal)}</strong>
                 </div>
                 <small>
-                  O envio da encomenda não significa confirmação de stock ou entrega. A equipa
-                  confirmará os detalhes no WhatsApp.
+                  O total é calculado novamente no servidor. Se o stock ou o preço tiver mudado,
+                  a encomenda será recusada e poderás rever a lista.
                 </small>
               </div>
-              <button className="checkout-submit" type="submit">
-                Enviar pedido de confirmação pelo WhatsApp <ArrowUpRight size={17} />
+              <button className="checkout-submit" type="submit" disabled={checkoutBusy}>
+                {checkoutBusy ? "A registar encomenda…" : "Confirmar encomenda"}
+                {!checkoutBusy && <ArrowUpRight size={17} />}
               </button>
             </form>
           </section>
@@ -803,15 +896,18 @@ function Storefront() {
             <button className="modal-close" onClick={() => setSelected(null)}>
               <X />
             </button>
-            <img src={selected.image} alt={selected.name} />
+            {selected.image ? (
+              <img src={selected.image} alt={selected.name} />
+            ) : (
+              <div className="flex min-h-64 items-center justify-center bg-pink-50 p-6 text-sm text-pink-700">
+                Imagem não disponível
+              </div>
+            )}
             <div>
               <span className="eyebrow">{selected.category}</span>
               <h2>{selected.name}</h2>
               <b>{money(selected.price)}</b>
-              <p>
-                Este artigo é um exemplo de apresentação. Contacta-nos para confirmar
-                disponibilidade, opções e detalhes da encomenda.
-              </p>
+              <p>{selected.description || "Fala connosco se precisares de mais informações sobre este artigo."}</p>
               <button
                 className="btn-primary"
                 onClick={() =>
