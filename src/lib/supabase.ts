@@ -99,8 +99,7 @@ function getConfig() {
 
 export function isSupabaseConfigured() {
   return Boolean(
-    import.meta.env.VITE_SUPABASE_URL?.trim() &&
-      import.meta.env.VITE_SUPABASE_ANON_KEY?.trim(),
+    import.meta.env.VITE_SUPABASE_URL?.trim() && import.meta.env.VITE_SUPABASE_ANON_KEY?.trim(),
   );
 }
 
@@ -149,9 +148,12 @@ function clearSession() {
 }
 
 async function readError(response: Response) {
-  const payload = (await response.json().catch(() => null)) as
-    | { message?: string; msg?: string; error_description?: string; error?: string }
-    | null;
+  const payload = (await response.json().catch(() => null)) as {
+    message?: string;
+    msg?: string;
+    error_description?: string;
+    error?: string;
+  } | null;
 
   return (
     payload?.message ??
@@ -315,9 +317,7 @@ export async function loadStorefrontCatalog() {
     id: product.id,
     name: product.name,
     category_id: product.category_id,
-    category: product.category_id
-      ? (categoryNames.get(product.category_id) ?? "Outros")
-      : "Outros",
+    category: product.category_id ? (categoryNames.get(product.category_id) ?? "Outros") : "Outros",
     description: product.description,
     price: product.price_aoa,
     image: product.image_url ?? "",
@@ -357,7 +357,8 @@ export async function loadAdminData() {
     order: "sort_order.asc,name.asc",
   });
   const orderQuery = new URLSearchParams({
-    select: "id,customer_name,customer_phone,delivery_address,customer_note,status,total_aoa,created_at,order_items(id,product_name,unit_price_aoa,quantity)",
+    select:
+      "id,customer_name,customer_phone,delivery_address,customer_note,status,total_aoa,created_at,order_items(id,product_name,unit_price_aoa,quantity)",
     order: "created_at.desc",
     limit: "100",
   });
@@ -421,10 +422,7 @@ export async function saveAdminProduct(input: {
   });
 }
 
-export async function updateAdminOrderStatus(
-  id: string,
-  status: AdminOrder["status"],
-) {
+export async function updateAdminOrderStatus(id: string, status: AdminOrder["status"]) {
   const query = new URLSearchParams({ id: `eq.${id}` });
   return apiRequest<AdminOrder[]>(`/rest/v1/orders?${query.toString()}`, {
     method: "PATCH",
