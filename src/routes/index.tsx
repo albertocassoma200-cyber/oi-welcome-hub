@@ -211,9 +211,7 @@ function Storefront() {
         neighborhood: "",
         note: "",
       });
-      setNotice(
-        `Encomenda registada. Referência: ${orderId.slice(0, 8).toUpperCase()}.`,
-      );
+      setNotice(`Encomenda registada. Referência: ${orderId.slice(0, 8).toUpperCase()}.`);
 
       try {
         const refreshedCatalog = await loadStorefrontCatalog();
@@ -560,8 +558,8 @@ function Storefront() {
           </div>
         )}
         <div className="catalog-note">
-          Os preços e o stock são consultados no catálogo da loja. A encomenda só é registada
-          depois de o servidor validar novamente o preço e a quantidade disponível.
+          Os preços e o stock são consultados no catálogo da loja. A encomenda só é registada depois
+          de o servidor validar novamente o preço e a quantidade disponível.
         </div>
         {cartCount > 0 && (
           <div className="order-bar">
@@ -878,8 +876,8 @@ function Storefront() {
                   <strong>{money(cartTotal)}</strong>
                 </div>
                 <small>
-                  O total é calculado novamente no servidor. Se o stock ou o preço tiver mudado,
-                  a encomenda será recusada e poderás rever a lista.
+                  O total é calculado novamente no servidor. Se o stock ou o preço tiver mudado, a
+                  encomenda será recusada e poderás rever a lista.
                 </small>
               </div>
               <button className="checkout-submit" type="submit" disabled={checkoutBusy}>
@@ -907,7 +905,10 @@ function Storefront() {
               <span className="eyebrow">{selected.category}</span>
               <h2>{selected.name}</h2>
               <b>{money(selected.price)}</b>
-              <p>{selected.description || "Fala connosco se precisares de mais informações sobre este artigo."}</p>
+              <p>
+                {selected.description ||
+                  "Fala connosco se precisares de mais informações sobre este artigo."}
+              </p>
               <button
                 className="btn-primary"
                 onClick={() =>
