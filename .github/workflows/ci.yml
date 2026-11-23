@@ -24,15 +24,26 @@ jobs:
         uses: oven-sh/setup-bun@v2
       - name: Instalar dependências
         run: bun install --frozen-lockfile
+      - name: Gerar árvore de rotas TanStack
+        run: |
+          set +e
+          timeout 20s bun run dev --host 127.0.0.1
+          status=$?
+          set -e
+          if [ "$status" -ne 124 ] && [ "$status" -ne 143 ]; then
+            echo "O servidor de desenvolvimento terminou antes de gerar as rotas."
+            exit "$status"
+          fi
+          grep -q "routes/admin" src/routeTree.gen.ts
       - name: Formatar ficheiros da loja
-        run: bunx prettier --write src/lib/supabase.ts src/routes/admin.tsx src/routes/index.tsx src/lib/store-catalog.ts src/test/store-catalog.test.ts src/routes/__root.tsx
+        run: bunx prettier --write src/lib/supabase.ts src/routes/admin.tsx src/routes/index.tsx src/lib/store-catalog.ts src/test/store-catalog.test.ts src/test/app-routing.test.tsx src/routes/__root.tsx
       - name: Registar formatação
         run: |
           if ! git diff --quiet; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add src/lib/supabase.ts src/routes/admin.tsx src/routes/index.tsx src/lib/store-catalog.ts src/test/store-catalog.test.ts src/routes/__root.tsx
-            git commit -m "Format storefront and administration code"
+            git add src/lib/supabase.ts src/routes/admin.tsx src/routes/index.tsx src/lib/store-catalog.ts src/test/store-catalog.test.ts src/test/app-routing.test.tsx src/routes/__root.tsx src/routeTree.gen.ts
+            git commit -m "Register admin route and format store code"
             git push
           fi
       - name: Verificar lint
