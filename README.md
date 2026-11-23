@@ -4,17 +4,17 @@ Loja online em português de Angola, com identidade visual rosa, branca e preta.
 
 ## Estado actual
 
-- Página pública em `src/routes/index.tsx`, com apresentação da marca, pesquisa, categorias visuais, favoritos e lista de interesse enviada pelo WhatsApp.
-- Os 12 artigos, imagens e preços actualmente presentes no catálogo são **referências ilustrativas**. Não representam stock confirmado nem inventário actualizado.
-- Foi criado o cliente de ligação ao Supabase em `src/lib/supabase.ts`, usando apenas a URL e a chave publicável configuradas no ambiente.
-- Foi criada a rota privada de administração em `/admin`, com login, verificação do papel `admin`, gestão de produtos/categorias e actualização do estado das encomendas.
-- A loja pública ainda não está ligada ao catálogo real nem ao registo de encomendas na base de dados. O fluxo público continua a servir apenas para pedir confirmação pelo WhatsApp.
-- A autenticação e o painel só ficam operacionais depois de aplicar o esquema no projecto Supabase e configurar as variáveis de ambiente.
+- A página pública em `src/routes/index.tsx` mantém a apresentação da marca, pesquisa, categorias visuais, favoritos e contactos.
+- O catálogo público lê apenas produtos e categorias activos do Supabase. As quantidades disponíveis limitam o selector de artigos; artigos sem stock aparecem como esgotados.
+- O checkout envia os artigos para a função transaccional `submit_order`. O servidor volta a validar preços e stock, regista a encomenda e guarda as linhas com o preço do momento da compra.
+- A rota `/admin` inclui login, verificação do papel `admin`, criação/edição de produtos, gestão de categorias e actualização do estado das encomendas.
+- As 12 referências locais em `src/lib/store-catalog.ts` são apenas materiais de demonstração/teste. Não são apresentadas como inventário e não são inseridas na base de dados.
+- A integração está preparada no código, mas ainda depende da aplicação da migração e da configuração das variáveis de ambiente no alojamento. Não foi feita uma operação na base de dados real durante esta execução.
 
 ## Preparar o Supabase
 
 1. Confirma que o projecto Supabase da loja está activo.
-2. Aplica o esquema existente em `supabase/migrations/202611160001_initial_store_schema.sql` através do fluxo de base de dados do projecto/Lovable ou do SQL Editor do Supabase. A migração cria tabelas, políticas RLS e a função transaccional `submit_order`; não insere produtos fictícios.
+2. Aplica o esquema existente em `supabase/migrations/202611160001_initial_store_schema.sql` pelo fluxo de base de dados do projecto/Lovable ou pelo SQL Editor do Supabase. A migração cria tabelas, políticas RLS e a função transaccional `submit_order`; não insere produtos fictícios.
 3. Em Authentication, cria a conta do proprietário. Não existe registo público no painel.
 4. Copia o UUID da conta e promove essa conta a administradora no SQL Editor:
 
@@ -28,11 +28,13 @@ Loja online em português de Angola, com identidade visual rosa, branca e preta.
    - `VITE_SUPABASE_URL`
    - `VITE_SUPABASE_ANON_KEY`
 
-   Usa `.env.example` como referência. O valor da chave publicável deve ser colocado apenas nas definições de ambiente, não num commit.
+   Usa `.env.example` como referência. A chave publicável deve ficar apenas nas definições de ambiente, nunca num commit.
 
-6. Abre `/admin`, entra com a conta administradora e adiciona categorias, produtos, preços e quantidades de stock reais. Os produtos começam como rascunho; activa a publicação apenas depois de confirmares os dados.
+6. Abre `/admin`, entra com a conta administradora e adiciona categorias, produtos, preços, imagens e quantidades de stock reais. Os produtos começam como rascunho; publica-os apenas depois de confirmares os dados.
 
-**Segurança:** usa somente a chave publicável/anon no browser. Nunca coloques `service_role`, passwords ou tokens privados em variáveis `VITE_*`, no GitHub ou no código do cliente. O painel consulta o perfil e depende das políticas RLS da base de dados; esconder a rota não substitui a autorização no Supabase.
+7. Testa uma encomenda com stock real e confirma que aparece no painel. Não publiques a loja comercialmente antes de validar as políticas RLS, a função `submit_order` e o fluxo de entrega.
+
+**Segurança:** usa somente a chave publicável/anon no browser. Nunca coloques `service_role`, passwords ou tokens privados em variáveis `VITE_*`, no GitHub ou no código do cliente. O painel verifica o perfil e depende das políticas RLS da base de dados; esconder a rota não substitui a autorização no Supabase.
 
 ## Modelo de dados
 
@@ -54,12 +56,12 @@ bun run test
 bun run build
 ```
 
-O GitHub Actions executa lint, testes e build em cada push para `main` e em pull requests.
+O GitHub Actions executa formatação, lint, testes e build em cada push para `main` e em pull requests.
 
 ## Próximas etapas
 
-1. Aplicar o esquema e configurar as variáveis de ambiente no Supabase/Lovable.
+1. Aplicar a migração e configurar as variáveis de ambiente no Supabase/Lovable.
 2. Testar login, permissões RLS e gestão administrativa com a conta real do proprietário.
-3. Ligar a página pública ao catálogo activo do Supabase e substituir as referências ilustrativas por produtos reais.
-4. Ligar o checkout à função transaccional `submit_order`, confirmar stock/preços no servidor e testar o fluxo completo.
-5. Rever imagens reais, políticas de entrega, pagamentos e contactos antes da publicação comercial.
+3. Confirmar que o catálogo público apresenta apenas artigos reais publicados e que o stock é actualizado após cada encomenda.
+4. Validar a função transaccional `submit_order`, os estados das encomendas e os contactos com clientes.
+5. Configurar armazenamento de imagens, políticas de entrega e pagamentos antes de activar a operação comercial.
